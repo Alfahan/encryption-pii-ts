@@ -48,7 +48,7 @@ const split = (value) => {
         sep = '@';
     }
     const parts = value.split(sep);
-    const result = parts.flatMap(part => part.match(regex) || []);
+    const result = parts.flatMap((part) => part.match(regex) || []);
     return result;
 };
 exports.split = split;
@@ -68,12 +68,16 @@ const buildHeap = (value, typeHeap) => {
     const values = (0, exports.split)(value);
     const builder = new Set();
     const heaps = [];
-    values.forEach(val => {
+    values.forEach((val) => {
         const valToLower = val.toLocaleLowerCase();
         const hash = (0, hmac_1.commonGenerateDigest)('SHA256', valToLower);
         const hash8LastChar = (0, exports.getLast8Characters)(hash);
         builder.add(hash8LastChar);
-        heaps.push({ content: valToLower, type: typeHeap, hash: hash8LastChar });
+        heaps.push({
+            content: valToLower,
+            type: typeHeap,
+            hash: hash8LastChar,
+        });
     });
     return { str: Array.from(builder).join(''), heaps };
 };
@@ -93,14 +97,14 @@ const saveToHeap = (textHeaps) => __awaiter(void 0, void 0, void 0, function* ()
         for (const type in textHeapsByType) {
             const group = textHeapsByType[type];
             // Extract all hashes from the current group
-            const hashes = group.map(th => th.hash);
+            const hashes = group.map((th) => th.hash);
             // Check existence of all hashes in one query
             const existQuery = `SELECT hash FROM ${type} WHERE hash = ANY($1)`;
             const existRes = yield entityManager.query(existQuery, [hashes]);
             // Create a Set of existing hashes for quick lookup
-            const existingHashes = new Set(existRes.map(row => row.hash));
+            const existingHashes = new Set(existRes.map((row) => row.hash));
             // Filter out textHeaps that already exist
-            const newTextHeaps = group.filter(th => !existingHashes.has(th.hash));
+            const newTextHeaps = group.filter((th) => !existingHashes.has(th.hash));
             if (newTextHeaps.length > 0) {
                 // Prepare batch insert query
                 const insertValues = [];
@@ -137,7 +141,8 @@ const searchContentFullText = (table, args) => __awaiter(void 0, void 0, void 0,
     const parameters = [lowerCaseContents];
     try {
         const result = yield dt.query(query, parameters);
-        const sortedResult = args.contents.map(content => {
+        const sortedResult = args.contents
+            .map((content) => {
             const row = result.find((row) => row.content.toLowerCase() === content.toLowerCase());
             return row
                 ? {
@@ -146,7 +151,8 @@ const searchContentFullText = (table, args) => __awaiter(void 0, void 0, void 0,
                     hash: row.hash,
                 }
                 : null;
-        }).filter(Boolean);
+        })
+            .filter(Boolean);
         return sortedResult;
     }
     catch (error) {
@@ -169,13 +175,20 @@ const buildBlindIndex = (entity) => __awaiter(void 0, void 0, void 0, function* 
                     // assign encrypt to fieldName
                     result[fieldName] = encryptWithAesBuf;
                     const txtHeapTable = getMetadata(entity, key, 'txt_heap_table');
+                    const fullTextSearch = getMetadata(entity, key, 'full_text_search');
                     if (txtHeapTable) {
                         const { str, heaps } = (0, exports.buildHeap)(value, txtHeapTable);
                         th.push(...heaps);
                         const bidxCol = getMetadata(entity, key, 'bidx_col');
                         if (bidxCol) {
-                            // assign bidx_col with heap
                             result[bidxCol] = str;
+                        }
+                    }
+                    else if (fullTextSearch) {
+                        const digest = (0, hmac_1.commonGenerateDigest)('SHA256', value);
+                        const field = getMetadata(entity, key, 'bidx_col');
+                        if (field) {
+                            result[field] = digest;
                         }
                     }
                 }

@@ -22,6 +22,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     profile.email = (0, aes_encryption_1.encryptWithAes)('AES_256_CBC', 'dyaksa.rahadian@gmail.com');
     profile.phone = (0, aes_encryption_1.encryptWithAes)('AES_256_CBC', '0899361449');
     const blindIdx = yield index_1.default.buildBlindIndex(profile);
+    console.log(blindIdx);
     // Create an SQL query for insertion
     const query = `
         INSERT INTO "profile" 
@@ -29,9 +30,12 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         VALUES ($1, $2, $3, $4, $5, $6)
     `;
     const values = [
-        blindIdx.name, blindIdx.name_bidx,
-        blindIdx.email, blindIdx.email_bidx,
-        blindIdx.phone, blindIdx.phone_bidx,
+        blindIdx.name,
+        blindIdx.name_bidx,
+        blindIdx.email,
+        blindIdx.email_bidx,
+        blindIdx.phone,
+        blindIdx.phone_bidx,
     ];
     yield dt.query(query, values);
     console.log('User has been saved:', profile);

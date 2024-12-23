@@ -26,7 +26,7 @@ __decorate([
     (0, typeorm_1.Column)('bytea'),
     index_1.default.DBColumn('name'),
     index_1.default.BidxCol('name_bidx'),
-    index_1.default.TxtHeapTable('name_text_heap'),
+    index_1.default.FullTextSearch(true),
     __metadata("design:type", types_1.AesCipher)
 ], Profile.prototype, "name", void 0);
 __decorate([

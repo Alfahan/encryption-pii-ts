@@ -8,12 +8,15 @@ const CryptoTs = {
     DBColumn: decorator_1.DBColumn,
     BidxCol: decorator_1.BidxCol,
     TxtHeapTable: decorator_1.TxtHeapTable,
+    FullTextSearch: decorator_1.FullTextSearch,
     encryptWithAes: aes_encryption_1.encryptWithAes,
     decryptWithAes: aes_encryption_1.decryptWithAes,
     buildBlindIndex: query_1.buildBlindIndex,
     searchContents: query_1.searchContents,
     searchContentFullText: query_1.searchContentFullText,
     split: query_1.split,
-    AesCipher: types_1.AesCipher
+    hashString: aes_encryption_1.hashString,
+    toMask: aes_encryption_1.toMask,
+    AesCipher: types_1.AesCipher,
 };
 exports.default = CryptoTs;

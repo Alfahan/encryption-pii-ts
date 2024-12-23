@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.encryptWithAes = exports.decryptWithAes = void 0;
+exports.toMask = exports.hashString = exports.encryptWithAes = exports.decryptWithAes = void 0;
 const crypto_1 = require("crypto");
 const buffer_1 = require("buffer");
 const alg_1 = require("./alg");
 const key_util_1 = require("./key_util");
 const dotenv = require("dotenv");
 const types_1 = require("./types");
+const hmac_1 = require("./hmac");
 dotenv.config();
 /**
  * @param alg {string}
@@ -53,7 +54,9 @@ const decrypt = (alg, key, data) => {
         throw new Error(`Invalid key length after conversion, expected ${metaAlg.expectedKeyLen} bytes but got ${keyBuf.length} bytes`);
     }
     // Convert data to a buffer if it's a string
-    const encryptedBufferTemp = buffer_1.Buffer.isBuffer(data) ? data : buffer_1.Buffer.from(data, 'hex');
+    const encryptedBufferTemp = buffer_1.Buffer.isBuffer(data)
+        ? data
+        : buffer_1.Buffer.from(data, 'hex');
     const asciiEncodedString = encryptedBufferTemp.toString('ascii');
     const encryptedBuffer = buffer_1.Buffer.from(asciiEncodedString, 'hex');
     if (encryptedBuffer.length < 16) {
@@ -202,3 +205,22 @@ const encryptWithAes = (type, data) => {
     return cipher;
 };
 exports.encryptWithAes = encryptWithAes;
+const hashString = (data) => {
+    return (0, hmac_1.commonGenerateDigest)('SHA256', data);
+};
+exports.hashString = hashString;
+const toMask = (data) => {
+    if (typeof data === 'string') {
+        return data
+            .split('')
+            .map((char, index) => {
+            if (index < 3 || index >= data.length - 3) {
+                return char;
+            }
+            return '*';
+        })
+            .join('');
+    }
+    return '';
+};
+exports.toMask = toMask;
