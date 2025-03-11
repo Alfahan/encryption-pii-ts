@@ -206,7 +206,7 @@ const encryptWithAes = (type, data) => {
 };
 exports.encryptWithAes = encryptWithAes;
 const hashString = (data) => {
-    return (0, hmac_1.commonGenerateDigest)('SHA256', data);
+    return (0, hmac_1.commonGenerateDigest)('SHA256', data.toLowerCase());
 };
 exports.hashString = hashString;
 const toMask = (data) => {

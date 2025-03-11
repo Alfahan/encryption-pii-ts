@@ -252,7 +252,7 @@ export const encryptWithAes = (type: string, data: string | Buffer): any => {
 };
 
 export const hashString = (data: string): string => {
-	return commonGenerateDigest('SHA256', data);
+	return commonGenerateDigest('SHA256', data.toLowerCase());
 };
 
 export const toMask = (data: string): string => {
