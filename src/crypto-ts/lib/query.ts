@@ -228,7 +228,7 @@ export const buildBlindIndex = async (entity: any): Promise<any> => {
 							result[bidxCol] = str;
 						}
 					} else if (fullTextSearch) {
-						const digest = commonGenerateDigest('SHA256', value);
+						const digest = commonGenerateDigest('SHA256', value.toLowerCase());
 
 						const field = getMetadata(entity, key, 'bidx_col');
 						if (field) {
