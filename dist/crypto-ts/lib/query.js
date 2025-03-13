@@ -185,7 +185,11 @@ const buildBlindIndex = (entity) => __awaiter(void 0, void 0, void 0, function* 
                         }
                     }
                     else if (fullTextSearch) {
+<<<<<<< HEAD
                         const digest = (0, hmac_1.commonGenerateDigest)('SHA256', value.toLowerCase());
+=======
+                        const digest = (0, hmac_1.commonGenerateDigest)('SHA256', value.toLocaleLowerCase());
+>>>>>>> 2d8ff09e3e6ec019a50c3d4f6be092a582bc10c2
                         const field = getMetadata(entity, key, 'bidx_col');
                         if (field) {
                             result[field] = digest;
