@@ -41,6 +41,11 @@ function pkcs5Padding(plainText: Buffer): Buffer {
 	return Buffer.concat([plainText, padBuff]);
 }
 
+function pkcs7Unpadding(plainText: Buffer): Buffer {
+	const padding = plainText[plainText.length - 1];
+	return plainText.slice(0, plainText.length - padding);
+}
+
 function pkcs5UnPadding(src: Buffer): Buffer {
 	const length = src.length;
 	const unpadding = src[length - 1];
@@ -52,12 +57,12 @@ function pkcs5UnPadding(src: Buffer): Buffer {
 	return src.slice(0, newLength);
 }
 
-
 export default {
 	checkKeyInput,
 	generateRandomIV,
 	pkcs5Padding,
 	pkcs5UnPadding,
+	pkcs7Unpadding,
 	KEY_SIZE_1KB,
 	KEY_SIZE_2KB,
 	KEY_SIZE_4KB,
