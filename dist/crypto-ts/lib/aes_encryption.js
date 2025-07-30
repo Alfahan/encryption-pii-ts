@@ -8,7 +8,10 @@ const key_util_1 = require("./key_util");
 const dotenv = require("dotenv");
 const types_1 = require("./types");
 const hmac_1 = require("./hmac");
+const key_util_2 = require("./key_util");
 dotenv.config();
+const DEFAULT_AUTH_TAG_LENGTH = 16;
+const SUPPORTED_AUTH_TAG_MODES = ['gcm', 'ccm', 'ocb', 'chacha20-poly1305'];
 /**
  * @param alg {string}
  * @return {{mode: *, ivLen: (number), expectedKeyLen: number}}
@@ -37,7 +40,7 @@ const getMetaFromAlgorithm = (alg) => {
  * @param alg {string}
  * @param key {string}
  * @param data {string | Buffer}
- * @return {Buffer}
+ * @return {string}
  */
 const decrypt = (alg, key, data) => {
     // Ensure data is a valid type
@@ -54,31 +57,27 @@ const decrypt = (alg, key, data) => {
         throw new Error(`Invalid key length after conversion, expected ${metaAlg.expectedKeyLen} bytes but got ${keyBuf.length} bytes`);
     }
     // Convert data to a buffer if it's a string
-    const encryptedBufferTemp = buffer_1.Buffer.isBuffer(data)
-        ? data
-        : buffer_1.Buffer.from(data, 'hex');
-    const asciiEncodedString = encryptedBufferTemp.toString('ascii');
-    const encryptedBuffer = buffer_1.Buffer.from(asciiEncodedString, 'hex');
-    if (encryptedBuffer.length < 16) {
-        throw new Error('Invalid encrypted data');
+    const encryptedBuffer = buffer_1.Buffer.from(data.toString(), 'hex');
+    // For non-authenticated modes (CBC)
+    if (encryptedBuffer.length < metaAlg.ivLen) {
+        throw new Error('Invalid encrypted data: too short');
     }
-    // Extract IV (first 16 bytes) and the encrypted data
-    const iv = encryptedBuffer.slice(0, 16);
-    const encryptedData = encryptedBuffer.slice(16);
-    if (encryptedData.length % 16 !== 0) {
-        throw new Error('Invalid encrypted data length');
+    // Extract IV and encrypted data
+    const iv = encryptedBuffer.subarray(0, metaAlg.ivLen);
+    const encryptedData = encryptedBuffer.subarray(metaAlg.ivLen);
+    if (encryptedData.length === 0) {
+        throw new Error('Invalid encrypted data: no data to decrypt');
     }
-    // Create a decipher instance
+    // Create decipher instance
     const decipher = (0, crypto_1.createDecipheriv)(alg, keyBuf, iv);
+    decipher.setAutoPadding(false);
     // Decrypt the data
     let decryptedData = buffer_1.Buffer.concat([
         decipher.update(encryptedData),
         decipher.final(),
     ]);
-    // Remove PKCS#5 (PKCS#7) padding
-    decryptedData = key_util_1.default.pkcs5UnPadding(decryptedData);
-    // Convert decrypted buffer to string
-    return decryptedData.toString('utf-8');
+    const unpadded = key_util_2.default.pkcs7Unpadding(decryptedData);
+    return unpadded.toString('utf-8');
 };
 const decryptWithAes = (type, data) => {
     const key = process.env.CRYPTO_AES_KEY;
@@ -101,8 +100,10 @@ const decryptWithAes = (type, data) => {
             break;
         case 'AES_256_GCM':
             decryptValue = decrypt(alg_1.default.AES_256_GCM, key, data);
+            break;
         case 'AES_128_CCM':
             decryptValue = decrypt(alg_1.default.AES_128_CCM, key, data);
+            break;
         case 'AES_192_CCM':
             decryptValue = decrypt(alg_1.default.AES_192_CCM, key, data);
             break;

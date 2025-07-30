@@ -35,6 +35,10 @@ function pkcs5Padding(plainText) {
     const padBuff = buffer_1.Buffer.alloc(padding, padding);
     return buffer_1.Buffer.concat([plainText, padBuff]);
 }
+function pkcs7Unpadding(plainText) {
+    const padding = plainText[plainText.length - 1];
+    return plainText.slice(0, plainText.length - padding);
+}
 function pkcs5UnPadding(src) {
     const length = src.length;
     const unpadding = src[length - 1];
@@ -48,6 +52,7 @@ exports.default = {
     generateRandomIV,
     pkcs5Padding,
     pkcs5UnPadding,
+    pkcs7Unpadding,
     KEY_SIZE_1KB,
     KEY_SIZE_2KB,
     KEY_SIZE_4KB,
