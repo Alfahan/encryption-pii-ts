@@ -86,22 +86,26 @@ const decrypt = (alg: string, key: string, data: string | Buffer): string => {
 	if (encryptedBuffer.length < metaAlg.ivLen) {
 		throw new Error('Invalid encrypted data: too short');
 	}
+
 	// Extract IV and encrypted data
 	const iv = encryptedBuffer.subarray(0, metaAlg.ivLen);
 	const encryptedData = encryptedBuffer.subarray(metaAlg.ivLen);
 	if (encryptedData.length === 0) {
 		throw new Error('Invalid encrypted data: no data to decrypt');
 	}
+
 	// Create decipher instance
 	const decipher = createDecipheriv(alg, keyBuf, iv);
 	decipher.setAutoPadding(false);
+
 	// Decrypt the data
 	let decryptedData = Buffer.concat([
 		decipher.update(encryptedData),
 		decipher.final(),
 	]);
-	const unpadded = key_util.pkcs7Unpadding(decryptedData);
-	return unpadded.toString('utf-8');
+	const raw = key_util.pkcs7Unpadding(decryptedData);
+	const unpadded = raw.toString('utf8').replace(/[\x00-\x1F\x7F]/g, '');
+	return unpadded;
 };
 
 export const decryptWithAes = (type: string, data: string | Buffer): string => {

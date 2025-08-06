@@ -1,17 +1,20 @@
 import CryptoTs from '../index';
 
-const data = 'LEMBAGA KEBIJAKAN PENGADAAN BARANG/JASA PEMERINTAH (LKPP)';
+const data = 'ARDIAN TELKOM FABD 漢字😀';
 
 // Encrypt
 const encryptedHex = CryptoTs.encryptWithAes('AES_256_CBC', data);
-console.log('Encrypted Data (Hex):', encryptedHex.Value.toString());
+// console.log('Encrypted Data (Hex):', encryptedHex.Value.toString());
 
 // Decrypt
 const decryptedData = CryptoTs.decryptWithAes(
 	'AES_256_CBC',
-	'a2d85256a0ec7cef518801e51c66a3c05efd6a3507d02c9fe89eff05f0de7fe611596be2d2d1152f1d86cdc34c17d2b749b00b46927243faa9130efc26d84a6982ad5fb42a7011ce5969446b7c1d7362',
+	// '6f42b202d20cd981704c8e04183d9a0e973bd3c62835bc41349894409f064cc93abbd4b0a331b9370df888162902197d',
+	// '9e1b6475ba75b3cc406ed3ee9810194a5bd72870720508bf7fc913d176e80ddb42c0d4604dc419ebe6c98e0696472a655c1edef4e3b85c80a13d792fc91b58a2b37aa831056fba021280b65675cc0567',
+	'd34ec05df32ed62be7aef38dedebecf72700ef86a1bdc80545dbf8ce74dc18464cde45ac744a45b386c199dc1c1490e4108c87e53d45cff93d4d0d02f2a0940eab85b9b7163f3b50f1f05cf86dbba7c5',
+	// encryptedHex.Value.toString(),
 );
-console.log('Decrypt Data:', decryptedData);
+console.log(decryptedData);
 
 // const decryptedData = CryptoTs.decryptWithAes(
 // 	'AES_256_CBC',
