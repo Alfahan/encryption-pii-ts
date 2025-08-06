@@ -9,7 +9,10 @@ console.log('Encrypted Data (Hex):', encryptedHex.Value.toString());
 // Decrypt
 const decryptedData = CryptoTs.decryptWithAes(
 	'AES_256_CBC',
-	'a2d85256a0ec7cef518801e51c66a3c05efd6a3507d02c9fe89eff05f0de7fe611596be2d2d1152f1d86cdc34c17d2b749b00b46927243faa9130efc26d84a6982ad5fb42a7011ce5969446b7c1d7362',
+	Buffer.from(
+		'd34ec05df32ed62be7aef38dedebecf72700ef86a1bdc80545dbf8ce74dc18464cde45ac744a45b386c199dc1c1490e4108c87e53d45cff93d4d0d02f2a0940eab85b9b7163f3b50f1f05cf86dbba7c5',
+	),
+	// 'd34ec05df32ed62be7aef38dedebecf72700ef86a1bdc80545dbf8ce74dc18464cde45ac744a45b386c199dc1c1490e4108c87e53d45cff93d4d0d02f2a0940eab85b9b7163f3b50f1f05cf86dbba7c5',
 );
 console.log('Decrypt Data:', decryptedData);
 
