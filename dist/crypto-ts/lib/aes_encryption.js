@@ -76,8 +76,9 @@ const decrypt = (alg, key, data) => {
         decipher.update(encryptedData),
         decipher.final(),
     ]);
-    const unpadded = key_util_2.default.pkcs7Unpadding(decryptedData);
-    return unpadded.toString('utf-8');
+    const raw = key_util_2.default.pkcs7Unpadding(decryptedData);
+    const unpadded = raw.toString('utf8').replace(/[\x00-\x1F\x7F]/g, '');
+    return unpadded;
 };
 const decryptWithAes = (type, data) => {
     const key = process.env.CRYPTO_AES_KEY;
